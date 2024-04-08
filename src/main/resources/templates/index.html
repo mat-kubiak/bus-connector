@@ -1,5 +1,20 @@
-<html>
-<body>
-<h1>Thymeleaf!!!</h1>
-</body>
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>My Thymeleaf Website</title>
+    </head>
+    <body>
+    <h1>Cities</h1>
+    <form id="myForm" action="/addCity" method="post">
+        <!-- You can include other form fields here if needed -->
+        <button type="submit">Add a city</button>
+    </form>
+    <ul>
+        <li th:each="city : ${cities}">
+            <span th:text="${city.getName()}"></span>
+        </li>
+    </ul>
+    </body>
 </html>

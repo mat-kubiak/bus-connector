@@ -5,36 +5,36 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "cars")
-public class Trip {
+@Table(name = "cities")
+public class City {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long tripId;
+    private Long cityId;
 
     @NotBlank
     @Size(max = 100)
     private String name;
 
-    public Trip() {
+    public City() {
 
     }
 
-    public Trip(String name) {
+    public City(String name) {
         this.name = name;
     }
 
-    public Trip(Long tripId, String name) {
-        this.tripId = tripId;
+    public City(Long cityId, String name) {
+        this.cityId = cityId;
         this.name = name;
     }
 
-    public void setTripId(Long id) {
-        this.tripId = id;
+    public void setCityId(Long id) {
+        this.cityId = id;
     }
 
-    public Long getTripId() {
-        return tripId;
+    public Long getCityId() {
+        return cityId;
     }
 
     public String getName() {
