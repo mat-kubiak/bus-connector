@@ -7,6 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.github.mat_kubiak.tqs.bus_connector.data.City;
 
 @Controller
 public class HomeController {
@@ -23,11 +27,10 @@ public class HomeController {
         return "index"; // Return the name of the Thymeleaf template
     }
 
-    @GetMapping("/addCity")
+    @RequestMapping(value="/add-city", method = RequestMethod.POST)
     public String handleAction() {
         logger.info("A city has been added!");
-//        tripService.
-//         Perform server-side action here
-        return "index"; // Redirect to a success page or return a response
+        tripService.save(new City("Thyme"));
+        return "redirect:/";
     }
 }
