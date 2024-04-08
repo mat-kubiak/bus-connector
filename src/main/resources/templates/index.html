@@ -15,6 +15,7 @@
         <option value="">Select Destination</option>
         <option th:each="city : ${cities}" th:value="${city.cityId}" th:text="${city.name}"></option>
     </select>
+    <button>Choose a date</button>
     <form id="myForm" action="/trip-search" method="post">
         <!-- You can include other form fields here if needed -->
         <button type="submit">Search for trips</button>
