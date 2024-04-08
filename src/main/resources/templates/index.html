@@ -3,18 +3,21 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>My Thymeleaf Website</title>
+        <title>Bus Selector</title>
     </head>
     <body>
     <h1>Cities</h1>
-    <form id="myForm" action="/add-city" method="post">
+    <select id="originCitySelector">
+        <option value="">Select Origin</option>
+        <option th:each="city : ${cities}" th:value="${city.cityId}" th:text="${city.name}"></option>
+    </select>
+    <select id="destinationCitySelector">
+        <option value="">Select Destination</option>
+        <option th:each="city : ${cities}" th:value="${city.cityId}" th:text="${city.name}"></option>
+    </select>
+    <form id="myForm" action="/trip-search" method="post">
         <!-- You can include other form fields here if needed -->
-        <button type="submit">Add a city</button>
+        <button type="submit">Search for trips</button>
     </form>
-    <ul>
-        <li th:each="city : ${cities}">
-            <span th:text="${city.getName()}"></span>
-        </li>
-    </ul>
     </body>
 </html>
