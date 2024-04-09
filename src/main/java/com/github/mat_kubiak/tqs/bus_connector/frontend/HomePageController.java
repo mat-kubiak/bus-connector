@@ -43,12 +43,16 @@ public class HomePageController {
                               @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date,
                               Model model) {
 
-        City fromCity = tripService.getCity(from);
-        City toCity = tripService.getCity(to);
-        model.addAttribute("originStr", fromCity.getName());
-        model.addAttribute("destinationStr", toCity.getName());
+        Optional<City> fromCity = tripService.getCity(from);
+        Optional<City> toCity = tripService.getCity(to);
+        if (fromCity.isEmpty() || toCity.isEmpty()) {
+            return "index";
+        }
 
-        List<Trip> trips = tripService.getTrips(fromCity, toCity, date);
+        model.addAttribute("originStr", fromCity.get().getName());
+        model.addAttribute("destinationStr", toCity.get().getName());
+
+        List<Trip> trips = tripService.getTrips(fromCity.get(), toCity.get(), date);
         model.addAttribute("trips", trips);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
@@ -56,6 +60,7 @@ public class HomePageController {
         model.addAttribute("dateStr", dateFormat.format(date));
         model.addAttribute("dateISO", isoFormat.format(date));
 
+        model.addAttribute("isInPast", tripService.isDateInPast(date));
         return "search";
     }
 
@@ -63,7 +68,12 @@ public class HomePageController {
     public String bookTicket(@RequestParam(required = true) Long tripId,
                              @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date,
                              Model model) {
-        Trip trip = tripService.getTrip(tripId);
+        Optional<Trip> tripOpt = tripService.getTrip(tripId);
+        if (tripOpt.isEmpty() || tripService.isDateInPast(date)) {
+            return index(model);
+        }
+        Trip trip = tripOpt.get();
+
         trip.setSeatsAvailable(tripService.calculateAvailableSeats(trip, date));
         model.addAttribute("trip", trip);
 

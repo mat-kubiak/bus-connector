@@ -1,10 +1,9 @@
 package com.github.mat_kubiak.tqs.bus_connector.service;
 
-import com.github.mat_kubiak.tqs.bus_connector.BusConnectorApplication;
 import com.github.mat_kubiak.tqs.bus_connector.data.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.github.mat_kubiak.tqs.bus_connector.data.Weekday;
@@ -15,8 +14,6 @@ import java.util.Optional;
 
 @Service
 public class ManagerService {
-
-    private static final Logger logger = LoggerFactory.getLogger(BusConnectorApplication.class);
 
     final CityRepository cityRepository;
     final TripRepository tripRepository;
@@ -33,11 +30,11 @@ public class ManagerService {
         return cityRepository.findAll();
     }
 
-    public City getCity(Long id) {
-        return cityRepository.findByCityId(id);
+    public Optional<City> getCity(Long id) {
+        return Optional.ofNullable(cityRepository.findByCityId(id));
     }
-    public Trip getTrip(Long id) {
-        return tripRepository.findByTripId(id);
+    public Optional<Trip> getTrip(Long id) {
+        return Optional.ofNullable(tripRepository.findByTripId(id));
     }
 
     public Optional<Ticket> getTicket(Long id) {
@@ -49,13 +46,14 @@ public class ManagerService {
         return trip.getSeatsTotal() - tickets.size();
     }
 
+    public boolean isDateInPast(Date date) {
+        long epoch = System.currentTimeMillis();
+        return date.before(new java.sql.Date(epoch));
+    }
+
     public List<Trip> getTrips(City from, City to, Date date) {
         Weekday day = Weekday.fromDate(date);
-        logger.info("Weekday: " + day);
-        logger.info("number: " + day.ordinal());
-
         List<Trip> trips = tripRepository.findAllBySourceCityAndDestinationCityAndWeekday(from, to, day);
-        logger.info("trips: " + trips);
 
         for (Trip trip : trips) {
             int available = calculateAvailableSeats(trip, date);
@@ -65,10 +63,14 @@ public class ManagerService {
         return trips;
     }
 
-    public Ticket bookTicket(Trip trip, Date date, String firstName, String lastName) {
+    public Optional<Ticket> bookTicket(Trip trip, Date date, String firstName, String lastName) {
+        if (calculateAvailableSeats(trip, date) == 0 || isDateInPast(date)) {
+            return Optional.empty();
+        }
+
         Ticket ticket = new Ticket(trip, date, firstName, lastName);
         Ticket newTicket = ticketRepository.save(ticket);
         ticketRepository.flush();
-        return newTicket;
+        return Optional.of(newTicket);
     }
 }
