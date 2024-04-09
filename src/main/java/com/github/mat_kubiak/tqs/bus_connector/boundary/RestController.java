@@ -5,6 +5,7 @@ import com.github.mat_kubiak.tqs.bus_connector.data.City;
 import com.github.mat_kubiak.tqs.bus_connector.data.Ticket;
 import com.github.mat_kubiak.tqs.bus_connector.data.Trip;
 import com.github.mat_kubiak.tqs.bus_connector.service.ManagerService;
+import com.github.mat_kubiak.tqs.bus_connector.service.ManagerServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -21,15 +22,15 @@ import java.util.Optional;
 public class RestController {
 
     private static final Logger logger = LoggerFactory.getLogger(BusConnectorApplication.class);
-    private final ManagerService managerService;
+    private final ManagerServiceImpl managerServiceImpl;
 
-    public RestController(ManagerService service) {
-        this.managerService = service;
+    public RestController(ManagerServiceImpl service) {
+        this.managerServiceImpl = service;
     }
 
     @GetMapping(path = "/cities",  produces = "application/json")
     public ResponseEntity<List<City>> getAllCities() {
-        List<City> cities = managerService.getAllCities();
+        List<City> cities = managerServiceImpl.getAllCities();
         if (cities.isEmpty()) {
             logger.info("/cities GET request: no cities found");
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -43,15 +44,15 @@ public class RestController {
                                    @RequestParam(required = true) Long to,
                                    @RequestParam(required = true) Date date) {
 
-        Optional<City> fromCity = managerService.getCity(from);
-        Optional<City> toCity = managerService.getCity(to);
+        Optional<City> fromCity = managerServiceImpl.getCity(from);
+        Optional<City> toCity = managerServiceImpl.getCity(to);
 
         if (fromCity.isEmpty() || toCity.isEmpty()) {
             logger.info("Bad /trips GET request: one or more cities with ids " + from + " " + to + " do not exist!");
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        List<Trip> trips = managerService.getTrips(fromCity.get(), toCity.get(), date);
+        List<Trip> trips = managerServiceImpl.getTrips(fromCity.get(), toCity.get(), date);
         if (trips.isEmpty()) {
             logger.info("Bad /trips GET request: trips not found for destination " + fromCity.get().getName() + " origin " + toCity.get().getName() + " on date " + date);
             return new ResponseEntity<>(Collections.emptyList(), HttpStatus.NOT_FOUND);
@@ -63,7 +64,7 @@ public class RestController {
 
     @GetMapping(path = "/ticket", produces = "application/json")
     public ResponseEntity<Ticket> getTicket(@RequestParam(required = true) Long id) {
-        Optional<Ticket> ticketOpt = managerService.getTicket(id);
+        Optional<Ticket> ticketOpt = managerServiceImpl.getTicket(id);
         if (ticketOpt.isEmpty()) {
             logger.info("Bad /ticket GET request: ticket id " + id + " does not exist!");
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -79,18 +80,18 @@ public class RestController {
                               @RequestParam(required = true) String firstName,
                               @RequestParam(required = true) String lastName) {
 
-        if (managerService.isDateInPast(date)) {
+        if (ManagerService.isDateInPast(date)) {
             logger.info("Bad /ticket POST request: date " + date + " is in the past!");
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Trip> trip = managerService.getTrip(tripId);
+        Optional<Trip> trip = managerServiceImpl.getTrip(tripId);
         if (trip.isEmpty()) {
             logger.info("Bad /ticket POST request: tripId " + tripId + " does not exist!");
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Ticket> ticketOpt = managerService.bookTicket(trip.get(), date, firstName, lastName);
+        Optional<Ticket> ticketOpt = managerServiceImpl.bookTicket(trip.get(), date, firstName, lastName);
         if (ticketOpt.isEmpty()) {
             logger.info("Bad /ticket POST request: not enough seats to reserve for trip " + tripId + " and date " + date);
             return new ResponseEntity<>(null, HttpStatus.FORBIDDEN);

@@ -7,6 +7,7 @@ import com.github.mat_kubiak.tqs.bus_connector.data.Ticket;
 import com.github.mat_kubiak.tqs.bus_connector.data.Trip;
 import com.github.mat_kubiak.tqs.bus_connector.service.ExchangeRateService;
 import com.github.mat_kubiak.tqs.bus_connector.service.ManagerService;
+import com.github.mat_kubiak.tqs.bus_connector.service.ManagerServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,11 +24,11 @@ import java.util.Optional;
 @Controller
 public class HomePageController {
     private static final Logger logger = LoggerFactory.getLogger(BusConnectorApplication.class);
-    private final ManagerService tripService;
+    private final ManagerServiceImpl tripService;
     private final ExchangeRateService rateService;
 
-    public HomePageController(ManagerService managerService, ExchangeRateService rateService) {
-        this.tripService = managerService;
+    public HomePageController(ManagerServiceImpl managerServiceImpl, ExchangeRateService rateService) {
+        this.tripService = managerServiceImpl;
         this.rateService = rateService;
     }
 
@@ -60,7 +61,7 @@ public class HomePageController {
         model.addAttribute("dateStr", dateFormat.format(date));
         model.addAttribute("dateISO", isoFormat.format(date));
 
-        model.addAttribute("isInPast", tripService.isDateInPast(date));
+        model.addAttribute("isInPast", ManagerService.isDateInPast(date));
         return "search";
     }
 
@@ -69,7 +70,7 @@ public class HomePageController {
                              @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date,
                              Model model) {
         Optional<Trip> tripOpt = tripService.getTrip(tripId);
-        if (tripOpt.isEmpty() || tripService.isDateInPast(date)) {
+        if (tripOpt.isEmpty() || ManagerService.isDateInPast(date)) {
             return index(model);
         }
         Trip trip = tripOpt.get();
