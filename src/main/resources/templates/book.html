@@ -4,6 +4,32 @@
     <head>
         <meta charset="UTF-8">
         <title>Bus Selector</title>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+            function handleClick() {
+
+                const firstName = document.getElementById('firstNameInput').value;
+                const lastName = document.getElementById('lastNameInput').value;
+                if (firstName.length === 0 || lastName.length === 0) {
+                    document.getElementById('errorLabel').innerText = 'first and last names are required!';
+                    return;
+                }
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const url = '/api/ticket?tripId=' + urlParams.get('tripId') +
+                    '&date=' + urlParams.get('date') +
+                    '&firstName=' + firstName +
+                    '&lastName=' + lastName;
+
+                axios.post(url)
+                    .then(response => {
+                        window.location.href = '/confirm?ticketId=' + response.data['ticketId'];
+                    })
+                    .catch(error => {
+                        document.getElementById('errorLabel').innerText = error;
+                    });
+            }
+        </script>
     </head>
     <body>
         <h1>Trip details</h1>
@@ -12,31 +38,17 @@
             <th>From</th>
             <th>To</th>
             <th>On</th>
+            <th>Departure</th>
+            <th>Arrival</th>
+            <th>Seats left</th>
             </thead>
             <tbody>
             <td th:text="${originStr}"></td>
             <td th:text="${destinationStr}"></td>
             <td th:text="${dateStr}">
-            </tbody>
-        </table>
-
-        <h1>Ticket Details</h1>
-        <table>
-            <thead>
-            <tr>
-                <th>Arrival</th>
-                <th>Departure</th>
-                <th>Seats left</th>
-                <th>Price (EUR)</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td th:text="${trip.arrivalTime}"></td>
-                <td th:text="${trip.departureTime}"></td>
-                <td th:text="${trip.seatsAvailable} + '/' + ${trip.seatsTotal}"></td>
-            </tr>
+            <td th:text="${trip.departureTime}"></td>
+            <td th:text="${trip.arrivalTime}"></td>
+            <td th:text="${trip.seatsAvailable} + '/' + ${trip.seatsTotal}"></td>
             </tbody>
         </table>
 
@@ -55,12 +67,9 @@
         </table>
 
         <h1>Book</h1>
-        <form id="myForm" action="/confirm" method="get">
-            <input type="hidden" name="tripId" th:value='${trip.tripId}'>
-            <input type="hidden" name="date" th:value='${dateISO}'>
-            <input type="text" name="firstName" value="">
-            <input type="text" name="lastName" value="">
-            <button type="submit">Confirm</button>
-        </form>
+        <input type="text" id="firstNameInput" value="">
+        <input type="text" id="lastNameInput" value="">
+        <button onclick="handleClick()">Confirm</button>
+        <label id="errorLabel" style="color: red"></label>
     </body>
 </html>

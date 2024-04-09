@@ -4,6 +4,14 @@
     <head>
         <meta charset="UTF-8">
         <title>Bus Selector</title>
+        <script>
+            window.onload = function() {
+                const tripTableBody = document.getElementById('tripTable').getElementsByTagName('tbody')[0];
+                if (tripTableBody.getElementsByTagName('tr').length === 0) {
+                    document.getElementById('errorLabel').innerText = 'There are no trips planned for this date!';
+                }
+            };
+        </script>
     </head>
     <body>
         <h1>Trips</h1>
@@ -20,31 +28,32 @@
             </tbody>
         </table>
 
-        <table>
+        <table id="tripTable">
             <thead>
             <tr>
-                <th>Arrival</th>
                 <th>Departure</th>
+                <th>Arrival</th>
                 <th>Seats left</th>
                 <th>Price (EUR)</th>
                 <th></th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="trip : ${trips}">
-                <td th:text="${trip.arrivalTime}"></td>
-                <td th:text="${trip.departureTime}"></td>
-                <td th:text="${trip.seatsAvailable} + '/' + ${trip.seatsTotal}"></td>
-                <td th:text="${trip.priceEuro}"></td>
-                <td>
-                    <form id="myForm" action="/book" method="get">
-                        <input type="hidden" name="tripId" th:value='${trip.tripId}'>
-                        <input type="hidden" name="date" th:value='${dateISO}'>
-                        <button type="submit">Book this ticket</button>
-                    </form>
-                </td>
-            </tr>
+                <tr th:each="trip : ${trips}">
+                    <td th:text="${trip.departureTime}"></td>
+                    <td th:text="${trip.arrivalTime}"></td>
+                    <td th:text="${trip.seatsAvailable} + '/' + ${trip.seatsTotal}"></td>
+                    <td th:text="${trip.priceEuro}"></td>
+                    <td>
+                        <form id="myForm" action="/book" method="get">
+                            <input type="hidden" name="tripId" th:value='${trip.tripId}'>
+                            <input type="hidden" name="date" th:value='${dateISO}'>
+                            <button type="submit">Book this ticket</button>
+                        </form>
+                    </td>
+                </tr>
             </tbody>
         </table>
+        <label id="errorLabel" style="color: red"></label>
     </body>
 </html>

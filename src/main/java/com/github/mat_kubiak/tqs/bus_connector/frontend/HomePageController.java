@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class HomePageController {
@@ -81,20 +82,21 @@ public class HomePageController {
     }
 
     @GetMapping("/confirm")
-    public String confirmBooking(@RequestParam(required = true) Long tripId,
-                                 @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date,
-                                 @RequestParam(required = true) String firstName,
-                                 @RequestParam(required = true) String lastName,
+    public String confirmBooking(@RequestParam(required = true) Long ticketId,
                                  Model model) {
+        Optional<Ticket> ticketOpt = tripService.getTicket(ticketId);
+        if (ticketOpt.isEmpty()) {
+            return "not-found";
+        }
 
-        Trip trip = tripService.getTrip(tripId);
-        Ticket ticket = tripService.bookTicket(trip, date, firstName, lastName);
-        ticket.getTrip().setSeatsAvailable(tripService.calculateAvailableSeats(trip, date));
+        Ticket ticket = ticketOpt.get();
         model.addAttribute("ticket", ticket);
 
+        Trip trip = ticket.getTrip();
         model.addAttribute("originStr", trip.getSourceCity().getName());
         model.addAttribute("destinationStr", trip.getDestinationCity().getName());
 
+        Date date = ticket.getDate();
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
         SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
         model.addAttribute("dateStr", dateFormat.format(date));

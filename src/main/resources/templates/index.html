@@ -6,17 +6,16 @@
         <title>Bus Selector</title>
     </head>
     <body>
-    <h1>Cities</h1>
+    <h1>Bus Selector</h1>
+    <label>Please select origin, destination and date of your trip!</label>
     <form id="myForm" action="/search" method="get">
-        <select id="originCitySelector" th:name="from">
-            <option value="">Select Origin</option>
+        <select id="originCitySelector" th:name="from" required="true">
             <option th:each="city : ${cities}" th:value="${city.cityId}" th:text="${city.name}"></option>
         </select>
-        <select id="destinationCitySelector" th:name="to">
-            <option value="">Select Destination</option>
+        <select id="destinationCitySelector" th:name="to" required="true">
             <option th:each="city : ${cities}" th:value="${city.cityId}" th:text="${city.name}"></option>
         </select>
-        <input type="date" id="dateSelector" th:name="date">
+        <input type="date" id="dateSelector" th:name="date" required="true">
         <button type="submit">Search for trips</button>
     </form>
     </body>
