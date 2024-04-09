@@ -3,7 +3,7 @@ package com.github.mat_kubiak.tqs.bus_connector.boundary;
 import com.github.mat_kubiak.tqs.bus_connector.data.City;
 import com.github.mat_kubiak.tqs.bus_connector.data.Ticket;
 import com.github.mat_kubiak.tqs.bus_connector.data.Trip;
-import com.github.mat_kubiak.tqs.bus_connector.service.CityManagerService;
+import com.github.mat_kubiak.tqs.bus_connector.service.ManagerService;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
@@ -14,9 +14,9 @@ import java.util.List;
 @RequestMapping("/api")
 public class RestController {
 
-    private final CityManagerService managerService;
+    private final ManagerService managerService;
 
-    public RestController(CityManagerService service) {
+    public RestController(ManagerService service) {
         this.managerService = service;
     }
 
@@ -27,9 +27,16 @@ public class RestController {
 
     @GetMapping(path = "/trips",  produces = "application/json")
     public List<Trip> getTripsInfo(@RequestParam(required = true) Long from,
-                               @RequestParam(required = true) Long to,
-                               @RequestParam(required = true) Date date) {
-        return Collections.emptyList();
+                                   @RequestParam(required = true) Long to,
+                                   @RequestParam(required = true) Date date) {
+
+        City fromCity = managerService.getCity(from);
+        City toCity = managerService.getCity(to);
+        if (fromCity == null || toCity == null) {
+            return Collections.emptyList();
+        }
+
+        return managerService.getTrips(fromCity, toCity, date);
     }
 
     @GetMapping(path = "/exchange", produces = "application/json")

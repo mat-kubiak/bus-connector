@@ -7,17 +7,16 @@
     </head>
     <body>
     <h1>Cities</h1>
-    <select id="originCitySelector">
-        <option value="">Select Origin</option>
-        <option th:each="city : ${cities}" th:value="${city.cityId}" th:text="${city.name}"></option>
-    </select>
-    <select id="destinationCitySelector">
-        <option value="">Select Destination</option>
-        <option th:each="city : ${cities}" th:value="${city.cityId}" th:text="${city.name}"></option>
-    </select>
-    <button>Choose a date</button>
-    <form id="myForm" action="/trip-search" method="post">
-        <!-- You can include other form fields here if needed -->
+    <form id="myForm" action="/search" method="get">
+        <select id="originCitySelector" th:name="from">
+            <!--        <option value="">Select Origin</option>-->
+            <option th:each="city : ${cities}" th:value="${city.cityId}" th:text="${city.name}"></option>
+        </select>
+        <select id="destinationCitySelector" th:name="to">
+            <!--        <option value="">Select Destination</option>-->
+            <option th:each="city : ${cities}" th:value="${city.cityId}" th:text="${city.name}"></option>
+        </select>
+        <input type="date" id="dateSelector" th:name="date">
         <button type="submit">Search for trips</button>
     </form>
     </body>

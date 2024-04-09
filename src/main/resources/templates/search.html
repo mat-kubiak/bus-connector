@@ -1,0 +1,30 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Bus Selector - search for trips</title>
+    </head>
+    <body>
+        <h1>Trips</h1>
+        <label>from: to: on: </label>
+        <table>
+            <thead>
+            <tr>
+                <th>Arrival</th>
+                <th>Departure</th>
+                <th>Seats in total</th>
+                <th>Seats left</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="trip : ${trips}">
+                <td th:text="${trip.arrivalTime}"></td>
+                <td th:text="${trip.departureTime}"></td>
+                <td th:text="${trip.seatsTotal}"></td>
+                <td th:text="${trip.seatsAvailable}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </body>
+</html>
