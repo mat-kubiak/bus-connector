@@ -3,7 +3,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>Bus Selector - search for trips</title>
+        <title>Bus Selector</title>
     </head>
     <body>
         <h1>Trips</h1>
@@ -37,7 +37,11 @@
                 <td th:text="${trip.seatsAvailable} + '/' + ${trip.seatsTotal}"></td>
                 <td th:text="${trip.priceEuro}"></td>
                 <td>
-                    <a th:href="@{'/book?tripId=' + ${trip.tripId} + '&date=' + ${dateISO}}"><button >Book this ticket</button></a>
+                    <form id="myForm" action="/book" method="get">
+                        <input type="hidden" name="tripId" th:value='${trip.tripId}'>
+                        <input type="hidden" name="date" th:value='${dateISO}'>
+                        <button type="submit">Book this ticket</button>
+                    </form>
                 </td>
             </tr>
             </tbody>

@@ -1,0 +1,36 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Bus Selector</title>
+    </head>
+    <body>
+        <h1>Ticket has been Booked!</h1>
+        <h2>Ticket Info</h2>
+        <table>
+            <thead>
+            <th>From</th>
+            <th>To</th>
+            <th>On</th>
+            <th>Arrival</th>
+            <th>Departure</th>
+            <th>Price (EUR)</th>
+            <th>Name</th>
+            </thead>
+            <tbody>
+            <td th:text="${originStr}"></td>
+            <td th:text="${destinationStr}"></td>
+            <td th:text="${dateStr}">
+            <td th:text="${ticket.trip.arrivalTime}"></td>
+            <td th:text="${ticket.trip.departureTime}"></td>
+            <td th:text="${ticket.trip.priceEuro}"></td>
+            <td th:text="${ticket.firstName + ' ' + ticket.lastName}"></td>
+            </tbody>
+        </table>
+
+        <h1>Ticket Id</h1>
+        <p>Please save this id for later, it will not be possible to retrieve it later!</p>
+        <h1 th:text="${ticket.ticketId}"></h1>
+    </body>
+</html>

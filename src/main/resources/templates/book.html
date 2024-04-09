@@ -3,7 +3,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>Bus Selector - search for trips</title>
+        <title>Bus Selector</title>
     </head>
     <body>
         <h1>Trip details</h1>
@@ -56,6 +56,10 @@
 
         <h1>Book</h1>
         <form id="myForm" action="/confirm" method="get">
+            <input type="hidden" name="tripId" th:value='${trip.tripId}'>
+            <input type="hidden" name="date" th:value='${dateISO}'>
+            <input type="text" name="firstName" value="">
+            <input type="text" name="lastName" value="">
             <button type="submit">Confirm</button>
         </form>
     </body>

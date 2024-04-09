@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
     public List<Ticket> findAllByTripAndDate(Trip trip, Date date);
+
+    public Ticket save(Ticket ticket);
 }

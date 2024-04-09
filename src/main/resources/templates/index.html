@@ -9,11 +9,11 @@
     <h1>Cities</h1>
     <form id="myForm" action="/search" method="get">
         <select id="originCitySelector" th:name="from">
-            <!--        <option value="">Select Origin</option>-->
+            <option value="">Select Origin</option>
             <option th:each="city : ${cities}" th:value="${city.cityId}" th:text="${city.name}"></option>
         </select>
         <select id="destinationCitySelector" th:name="to">
-            <!--        <option value="">Select Destination</option>-->
+            <option value="">Select Destination</option>
             <option th:each="city : ${cities}" th:value="${city.cityId}" th:text="${city.name}"></option>
         </select>
         <input type="date" id="dateSelector" th:name="date">

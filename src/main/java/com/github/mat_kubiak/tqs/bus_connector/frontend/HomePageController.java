@@ -2,6 +2,7 @@ package com.github.mat_kubiak.tqs.bus_connector.frontend;
 
 import com.github.mat_kubiak.tqs.bus_connector.BusConnectorApplication;
 import com.github.mat_kubiak.tqs.bus_connector.data.City;
+import com.github.mat_kubiak.tqs.bus_connector.data.Ticket;
 import com.github.mat_kubiak.tqs.bus_connector.data.Trip;
 import com.github.mat_kubiak.tqs.bus_connector.service.ManagerService;
 import org.slf4j.Logger;
@@ -13,9 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -67,9 +66,34 @@ public class HomePageController {
         model.addAttribute("destinationStr", trip.getDestinationCity().getName());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
+        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
         model.addAttribute("dateStr", dateFormat.format(date));
+        model.addAttribute("dateISO", isoFormat.format(date));
 
         return "book";
+    }
+
+    @GetMapping("/confirm")
+    public String confirmBooking(@RequestParam(required = true) Long tripId,
+                                 @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date,
+                                 @RequestParam(required = true) String firstName,
+                                 @RequestParam(required = true) String lastName,
+                                 Model model) {
+
+        Trip trip = tripService.getTrip(tripId);
+        Ticket ticket = tripService.bookTicket(trip, date, firstName, lastName);
+        ticket.getTrip().setSeatsAvailable(tripService.calculateAvailableSeats(trip, date));
+        model.addAttribute("ticket", ticket);
+
+        model.addAttribute("originStr", trip.getSourceCity().getName());
+        model.addAttribute("destinationStr", trip.getDestinationCity().getName());
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
+        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
+        model.addAttribute("dateStr", dateFormat.format(date));
+        model.addAttribute("dateISO", isoFormat.format(date));
+
+        return "confirm";
     }
 
 }

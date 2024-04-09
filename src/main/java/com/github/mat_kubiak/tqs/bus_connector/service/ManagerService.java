@@ -1,9 +1,8 @@
 package com.github.mat_kubiak.tqs.bus_connector.service;
 
 import com.github.mat_kubiak.tqs.bus_connector.BusConnectorApplication;
-import com.github.mat_kubiak.tqs.bus_connector.boundary.ExchangeRates;
 import com.github.mat_kubiak.tqs.bus_connector.data.*;
-import org.slf4j.ILoggerFactory;
+import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.github.mat_kubiak.tqs.bus_connector.data.Weekday;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
-import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,4 +66,10 @@ public class ManagerService {
         return trips;
     }
 
+    public Ticket bookTicket(Trip trip, Date date, String firstName, String lastName) {
+        Ticket ticket = new Ticket(trip, date, firstName, lastName);
+        Ticket newTicket = ticketRepository.save(ticket);
+        ticketRepository.flush();
+        return newTicket;
+    }
 }
