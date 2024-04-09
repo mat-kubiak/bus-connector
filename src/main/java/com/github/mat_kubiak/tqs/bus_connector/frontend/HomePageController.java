@@ -2,8 +2,10 @@ package com.github.mat_kubiak.tqs.bus_connector.frontend;
 
 import com.github.mat_kubiak.tqs.bus_connector.BusConnectorApplication;
 import com.github.mat_kubiak.tqs.bus_connector.data.City;
+import com.github.mat_kubiak.tqs.bus_connector.data.ExchangeRateResponse;
 import com.github.mat_kubiak.tqs.bus_connector.data.Ticket;
 import com.github.mat_kubiak.tqs.bus_connector.data.Trip;
+import com.github.mat_kubiak.tqs.bus_connector.service.ExchangeRateService;
 import com.github.mat_kubiak.tqs.bus_connector.service.ManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +23,11 @@ import java.util.List;
 public class HomePageController {
     private static final Logger logger = LoggerFactory.getLogger(BusConnectorApplication.class);
     private final ManagerService tripService;
+    private final ExchangeRateService rateService;
 
-    public HomePageController(ManagerService managerService) {
+    public HomePageController(ManagerService managerService, ExchangeRateService rateService) {
         this.tripService = managerService;
+        this.rateService = rateService;
     }
 
     @GetMapping("/")
@@ -69,6 +73,9 @@ public class HomePageController {
         SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
         model.addAttribute("dateStr", dateFormat.format(date));
         model.addAttribute("dateISO", isoFormat.format(date));
+
+        ExchangeRateResponse rateResponse = rateService.getExchangeRates();
+        model.addAttribute("rates", rateResponse.getRates());
 
         return "book";
     }

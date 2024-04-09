@@ -48,9 +48,9 @@
             <th>CZK</th>
             </thead>
             <tbody>
-            <td th:text="${trip.priceEuro}"></td>
-            <td th:text="${trip.priceEuro}"></td>
-            <td th:text="${trip.priceEuro}"></td>
+            <td th:text="${trip.priceEuro * rates['EUR']}"></td>
+            <td th:text="${trip.priceEuro * rates['CHF']}"></td>
+            <td th:text="${trip.priceEuro * rates['CZK']}"></td>
             </tbody>
         </table>
 

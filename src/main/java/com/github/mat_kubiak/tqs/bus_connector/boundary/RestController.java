@@ -1,8 +1,10 @@
 package com.github.mat_kubiak.tqs.bus_connector.boundary;
 
 import com.github.mat_kubiak.tqs.bus_connector.data.City;
+import com.github.mat_kubiak.tqs.bus_connector.data.ExchangeRateResponse;
 import com.github.mat_kubiak.tqs.bus_connector.data.Ticket;
 import com.github.mat_kubiak.tqs.bus_connector.data.Trip;
+import com.github.mat_kubiak.tqs.bus_connector.service.ExchangeRateService;
 import com.github.mat_kubiak.tqs.bus_connector.service.ManagerService;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,9 +17,11 @@ import java.util.List;
 public class RestController {
 
     private final ManagerService managerService;
+    private final ExchangeRateService rateService;
 
-    public RestController(ManagerService service) {
+    public RestController(ManagerService service, ExchangeRateService rateService) {
         this.managerService = service;
+        this.rateService = rateService;
     }
 
     @GetMapping(path = "/cities",  produces = "application/json")
@@ -39,9 +43,9 @@ public class RestController {
         return managerService.getTrips(fromCity, toCity, date);
     }
 
-    @GetMapping(path = "/exchange", produces = "application/json")
-    public ExchangeRates getExchangeRates() {
-        return new ExchangeRates(0.0, 0.0, 0.0);
+    @GetMapping(path = "/exchange-rates", produces = "application/json")
+    public ExchangeRateResponse getExchangeRates() {
+        return rateService.getExchangeRates();
     }
 
     @GetMapping(path = "/ticket", produces = "application/json")
@@ -50,7 +54,17 @@ public class RestController {
     }
 
     @PostMapping(path = "/ticket", produces = "application/json")
-    public Long reserveTicket() {
-        return 0L;
+    public Long reserveTicket(@RequestParam(required = true) Long tripId,
+                              @RequestParam(required = true) Date date,
+                              @RequestParam(required = true) String firstName,
+                              @RequestParam(required = true) String lastName) {
+
+        Trip trip = managerService.getTrip(tripId);
+        if (trip == null) {
+
+        }
+
+        Ticket ticket = managerService.bookTicket(trip, date, firstName, lastName);
+        return ticket.getTicketId();
     }
 }

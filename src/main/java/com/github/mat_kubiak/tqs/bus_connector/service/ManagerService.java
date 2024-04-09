@@ -2,7 +2,6 @@ package com.github.mat_kubiak.tqs.bus_connector.service;
 
 import com.github.mat_kubiak.tqs.bus_connector.BusConnectorApplication;
 import com.github.mat_kubiak.tqs.bus_connector.data.*;
-import jakarta.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
