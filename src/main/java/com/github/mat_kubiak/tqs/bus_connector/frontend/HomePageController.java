@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -39,10 +41,35 @@ public class HomePageController {
 
         City fromCity = tripService.getCity(from);
         City toCity = tripService.getCity(to);
+        model.addAttribute("originStr", fromCity.getName());
+        model.addAttribute("destinationStr", toCity.getName());
 
         List<Trip> trips = tripService.getTrips(fromCity, toCity, date);
         model.addAttribute("trips", trips);
 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
+        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
+        model.addAttribute("dateStr", dateFormat.format(date));
+        model.addAttribute("dateISO", isoFormat.format(date));
+
         return "search";
     }
+
+    @GetMapping("/book")
+    public String bookTicket(@RequestParam(required = true) Long tripId,
+                             @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date,
+                             Model model) {
+        Trip trip = tripService.getTrip(tripId);
+        trip.setSeatsAvailable(tripService.calculateAvailableSeats(trip, date));
+        model.addAttribute("trip", trip);
+
+        model.addAttribute("originStr", trip.getSourceCity().getName());
+        model.addAttribute("destinationStr", trip.getDestinationCity().getName());
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
+        model.addAttribute("dateStr", dateFormat.format(date));
+
+        return "book";
+    }
+
 }

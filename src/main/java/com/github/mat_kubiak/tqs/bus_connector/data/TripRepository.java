@@ -8,4 +8,5 @@ import java.util.List;
 @Repository
 public interface TripRepository extends JpaRepository<Trip, Long> {
     public List<Trip> findAllBySourceCityAndDestinationCityAndWeekday(City sourceCity, City destinationCity, Weekday weekday);
+    public Trip findByTripId(Long tripId);
 }

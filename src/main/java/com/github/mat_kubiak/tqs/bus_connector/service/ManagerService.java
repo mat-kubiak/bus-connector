@@ -1,6 +1,7 @@
 package com.github.mat_kubiak.tqs.bus_connector.service;
 
 import com.github.mat_kubiak.tqs.bus_connector.BusConnectorApplication;
+import com.github.mat_kubiak.tqs.bus_connector.boundary.ExchangeRates;
 import com.github.mat_kubiak.tqs.bus_connector.data.*;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
@@ -41,6 +42,9 @@ public class ManagerService {
     public City getCity(Long id) {
         return cityRepository.findByCityId(id);
     }
+    public Trip getTrip(Long id) {
+        return tripRepository.findByTripId(id);
+    }
 
     public Optional<Ticket> getTicket(Long id) {
         return ticketRepository.findById(id);
@@ -49,15 +53,6 @@ public class ManagerService {
     public Integer calculateAvailableSeats(Trip trip, Date date) {
         List<Ticket> tickets = ticketRepository.findAllByTripAndDate(trip, date);
         return trip.getSeatsTotal() - tickets.size();
-    }
-
-    private Weekday toWeekDay(Date date) {
-        Date utilDate = new Date();
-        Instant instant = utilDate.toInstant();
-        LocalDate localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
-        logger.info("day of the week: " + localDate.getDayOfWeek());
-
-        return Weekday.values()[localDate.getDayOfWeek().getValue() - 1];
     }
 
     public List<Trip> getTrips(City from, City to, Date date) {

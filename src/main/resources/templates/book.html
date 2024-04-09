@@ -6,7 +6,7 @@
         <title>Bus Selector - search for trips</title>
     </head>
     <body>
-        <h1>Trips</h1>
+        <h1>Trip details</h1>
         <table>
             <thead>
             <th>From</th>
@@ -20,6 +20,7 @@
             </tbody>
         </table>
 
+        <h1>Ticket Details</h1>
         <table>
             <thead>
             <tr>
@@ -31,16 +32,31 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="trip : ${trips}">
+            <tr>
                 <td th:text="${trip.arrivalTime}"></td>
                 <td th:text="${trip.departureTime}"></td>
                 <td th:text="${trip.seatsAvailable} + '/' + ${trip.seatsTotal}"></td>
-                <td th:text="${trip.priceEuro}"></td>
-                <td>
-                    <a th:href="@{'/book?tripId=' + ${trip.tripId} + '&date=' + ${dateISO}}"><button >Book this ticket</button></a>
-                </td>
             </tr>
             </tbody>
         </table>
+
+        <h1>Price</h1>
+        <table>
+            <thead>
+            <th>EUR</th>
+            <th>CHF</th>
+            <th>CZK</th>
+            </thead>
+            <tbody>
+            <td th:text="${trip.priceEuro}"></td>
+            <td th:text="${trip.priceEuro}"></td>
+            <td th:text="${trip.priceEuro}"></td>
+            </tbody>
+        </table>
+
+        <h1>Book</h1>
+        <form id="myForm" action="/confirm" method="get">
+            <button type="submit">Confirm</button>
+        </form>
     </body>
 </html>
