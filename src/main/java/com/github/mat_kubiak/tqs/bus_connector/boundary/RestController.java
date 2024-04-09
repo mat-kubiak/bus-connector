@@ -21,11 +21,9 @@ import java.util.Optional;
 public class RestController {
 
     private final ManagerService managerService;
-    private final ExchangeRateService rateService;
 
-    public RestController(ManagerService service, ExchangeRateService rateService) {
+    public RestController(ManagerService service) {
         this.managerService = service;
-        this.rateService = rateService;
     }
 
     @GetMapping(path = "/cities",  produces = "application/json")
@@ -54,15 +52,6 @@ public class RestController {
         }
 
         return new ResponseEntity<>(trips, HttpStatus.OK);
-    }
-
-    @GetMapping(path = "/exchange-rates", produces = "application/json")
-    public ResponseEntity<ExchangeRateResponse> getExchangeRates() {
-        ExchangeRateResponse response = rateService.getExchangeRates();
-        if (response == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(path = "/ticket", produces = "application/json")
