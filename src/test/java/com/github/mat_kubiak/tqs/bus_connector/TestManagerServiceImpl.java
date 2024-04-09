@@ -23,7 +23,7 @@ class TestManagerServiceImpl {
 
     private Date today, tomorrow;
     private Weekday todayWeekday, tomorrowWeekday;
-    private City tokyo, lodz, moskow;
+    private City tokyo, lodz, moscow;
     private Trip tripToday, tripTomorrow;
 
     @Mock( lenient = true)
@@ -43,14 +43,14 @@ class TestManagerServiceImpl {
     public void setUp() {
         tokyo = new City(1L, "Tokyo");
         lodz = new City(2L, "Lodz");
-        moskow = new City(3L, "Moskow");
+        moscow = new City(3L, "Moscow");
 
-        List<City> allCities = Arrays.asList(tokyo, lodz, moskow);
+        List<City> allCities = Arrays.asList(tokyo, lodz, moscow);
         Mockito.when(cityRepository.findAll()).thenReturn(allCities);
 
         Mockito.when(cityRepository.findByCityId(1L)).thenReturn(tokyo);
         Mockito.when(cityRepository.findByCityId(2L)).thenReturn(lodz);
-        Mockito.when(cityRepository.findByCityId(3L)).thenReturn(moskow);
+        Mockito.when(cityRepository.findByCityId(3L)).thenReturn(moscow);
 
         Mockito.when(cityRepository.findByCityId(4L)).thenReturn(null);
 
@@ -62,10 +62,10 @@ class TestManagerServiceImpl {
 
         long epoch = Calendar.getInstance().getTimeInMillis();
         tripToday = new Trip(1L, tokyo, lodz, todayWeekday, new Time(epoch), new Time(epoch), 20, 2);
-        tripTomorrow = new Trip(2L, lodz, moskow, tomorrowWeekday, new Time(epoch), new Time(epoch), 20, 2);
+        tripTomorrow = new Trip(2L, lodz, moscow, tomorrowWeekday, new Time(epoch), new Time(epoch), 20, 2);
 
         Mockito.when(tripRepository.findAllBySourceCityAndDestinationCityAndWeekday(tokyo, lodz, todayWeekday)).thenReturn(Arrays.asList(tripToday));
-        Mockito.when(tripRepository.findAllBySourceCityAndDestinationCityAndWeekday(lodz, moskow, tomorrowWeekday)).thenReturn(Arrays.asList(tripTomorrow));
+        Mockito.when(tripRepository.findAllBySourceCityAndDestinationCityAndWeekday(lodz, moscow, tomorrowWeekday)).thenReturn(Arrays.asList(tripTomorrow));
 
         Mockito.when(tripRepository.findByTripId(tripToday.getTripId())).thenReturn(tripToday);
         Mockito.when(tripRepository.findByTripId(tripTomorrow.getTripId())).thenReturn(tripTomorrow);
@@ -86,13 +86,13 @@ class TestManagerServiceImpl {
     @Test
     public void getAllCitiesTest() {
         List<City> cities = managerService.getAllCities();
-        assertThat(cities).extracting(City::getName).containsExactly("Tokyo", "Lodz", "Moskow");
+        assertThat(cities).extracting(City::getName).containsExactly("Tokyo", "Lodz", "Moscow");
     }
 
     @Test
     public void getTripsGivenDateTest() {
         assertThat(managerService.getTrips(tokyo, lodz, today)).containsExactly(tripToday);
-        assertThat(managerService.getTrips(lodz, moskow, tomorrow)).containsExactly(tripTomorrow);
+        assertThat(managerService.getTrips(lodz, moscow, tomorrow)).containsExactly(tripTomorrow);
     }
 
     @Test
