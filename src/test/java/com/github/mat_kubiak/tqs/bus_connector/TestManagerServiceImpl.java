@@ -40,7 +40,7 @@ class TestManagerServiceImpl {
     private ManagerServiceImpl managerService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         tokyo = new City(1L, "Tokyo");
         lodz = new City(2L, "Lodz");
         moscow = new City(3L, "Moscow");
@@ -84,25 +84,25 @@ class TestManagerServiceImpl {
     }
 
     @Test
-    public void getAllCitiesTest() {
+    void getAllCitiesTest() {
         List<City> cities = managerService.getAllCities();
         assertThat(cities).extracting(City::getName).containsExactly("Tokyo", "Lodz", "Moscow");
     }
 
     @Test
-    public void getTripsGivenDateTest() {
+    void getTripsGivenDateTest() {
         assertThat(managerService.getTrips(tokyo, lodz, today)).containsExactly(tripToday);
         assertThat(managerService.getTrips(lodz, moscow, tomorrow)).containsExactly(tripTomorrow);
     }
 
     @Test
-    public void calculateAvailableSeatsTest() {
+    void calculateAvailableSeatsTest() {
         Trip trip = managerService.getTrip(1L).get();
         assertThat(managerService.calculateAvailableSeats(trip, today)).isEqualTo(0);
     }
 
     @Test
-    public void bookTicketTest() {
+    void bookTicketTest() {
         assertThat(managerService.bookTicket(tripTomorrow, tomorrow, "Ana", "Fereira").isEmpty()).isEqualTo(false);
 
         // incompatible weekday

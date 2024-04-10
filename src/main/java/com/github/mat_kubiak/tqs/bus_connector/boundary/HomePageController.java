@@ -1,6 +1,5 @@
-package com.github.mat_kubiak.tqs.bus_connector.frontend;
+package com.github.mat_kubiak.tqs.bus_connector.boundary;
 
-import com.github.mat_kubiak.tqs.bus_connector.BusConnectorApplication;
 import com.github.mat_kubiak.tqs.bus_connector.data.City;
 import com.github.mat_kubiak.tqs.bus_connector.data.ExchangeRateResponse;
 import com.github.mat_kubiak.tqs.bus_connector.data.Ticket;
@@ -8,9 +7,9 @@ import com.github.mat_kubiak.tqs.bus_connector.data.Trip;
 import com.github.mat_kubiak.tqs.bus_connector.service.ExchangeRateService;
 import com.github.mat_kubiak.tqs.bus_connector.service.ManagerService;
 import com.github.mat_kubiak.tqs.bus_connector.service.ManagerServiceImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,13 +22,22 @@ import java.util.Optional;
 
 @Controller
 public class HomePageController {
-    private static final Logger logger = LoggerFactory.getLogger(BusConnectorApplication.class);
+
     private final ManagerServiceImpl tripService;
+
     private final ExchangeRateService rateService;
 
-    public HomePageController(ManagerServiceImpl managerServiceImpl, ExchangeRateService rateService) {
-        this.tripService = managerServiceImpl;
+    private String originParam = "originStr";
+    private String destParam = "destinationStr";
+    private String dateParam = "dateStr";
+    private String dateIsoParam = "dateISO";
+
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
+    private SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+    public HomePageController(ExchangeRateService rateService, ManagerServiceImpl tripService) {
         this.rateService = rateService;
+        this.tripService = tripService;
     }
 
     @GetMapping("/")
@@ -50,16 +58,14 @@ public class HomePageController {
             return "index";
         }
 
-        model.addAttribute("originStr", fromCity.get().getName());
-        model.addAttribute("destinationStr", toCity.get().getName());
+        model.addAttribute(originParam, fromCity.get().getName());
+        model.addAttribute(destParam, toCity.get().getName());
 
         List<Trip> trips = tripService.getTrips(fromCity.get(), toCity.get(), date);
         model.addAttribute("trips", trips);
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
-        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
-        model.addAttribute("dateStr", dateFormat.format(date));
-        model.addAttribute("dateISO", isoFormat.format(date));
+        model.addAttribute(dateParam, dateFormat.format(date));
+        model.addAttribute(dateIsoParam, isoFormat.format(date));
 
         model.addAttribute("isInPast", ManagerService.isDateInPast(date));
         return "search";
@@ -78,13 +84,11 @@ public class HomePageController {
         trip.setSeatsAvailable(tripService.calculateAvailableSeats(trip, date));
         model.addAttribute("trip", trip);
 
-        model.addAttribute("originStr", trip.getSourceCity().getName());
-        model.addAttribute("destinationStr", trip.getDestinationCity().getName());
+        model.addAttribute(originParam, trip.getSourceCity().getName());
+        model.addAttribute(originParam, trip.getDestinationCity().getName());
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
-        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
-        model.addAttribute("dateStr", dateFormat.format(date));
-        model.addAttribute("dateISO", isoFormat.format(date));
+        model.addAttribute(dateParam, dateFormat.format(date));
+        model.addAttribute(dateIsoParam, isoFormat.format(date));
 
         ExchangeRateResponse rateResponse = rateService.getExchangeRates();
         model.addAttribute("rates", rateResponse.getRates());
@@ -104,12 +108,10 @@ public class HomePageController {
         model.addAttribute("ticket", ticket);
 
         Trip trip = ticket.getTrip();
-        model.addAttribute("originStr", trip.getSourceCity().getName());
-        model.addAttribute("destinationStr", trip.getDestinationCity().getName());
+        model.addAttribute(originParam, trip.getSourceCity().getName());
+        model.addAttribute(destParam, trip.getDestinationCity().getName());
 
         Date date = ticket.getDate();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
-        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
         model.addAttribute("dateStr", dateFormat.format(date));
         model.addAttribute("dateISO", isoFormat.format(date));
 

@@ -11,10 +11,10 @@ import static com.github.mat_kubiak.tqs.bus_connector.TestUtil.shiftDays;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class UnitTests {
+class UnitTests {
 
     @Test
-    public void testDateBefore() {
+    void testDateBefore() {
         Date now = new Date(System.currentTimeMillis());
         Date yesterday = shiftDays(now, -1);
         Date tomorrow = shiftDays(now, 1);
@@ -25,7 +25,7 @@ public class UnitTests {
     }
 
     @Test
-    public void testWeekday() {
+    void testWeekday() {
         Date tuesdayDate = getDate(2024, 4, 9);
         assertThat(Weekday.fromDate(tuesdayDate), equalTo(Weekday.TUESDAY));
 

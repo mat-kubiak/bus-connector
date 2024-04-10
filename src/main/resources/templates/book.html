@@ -58,11 +58,13 @@
             <th>EUR</th>
             <th>CHF</th>
             <th>CZK</th>
+            <th>HUF</th>
             </thead>
             <tbody>
             <td th:text="${trip.priceEuro * rates['EUR']}"></td>
             <td th:text="${trip.priceEuro * rates['CHF']}"></td>
             <td th:text="${trip.priceEuro * rates['CZK']}"></td>
+            <td th:text="${trip.priceEuro * rates['HUF']}"></td>
             </tbody>
         </table>
 
