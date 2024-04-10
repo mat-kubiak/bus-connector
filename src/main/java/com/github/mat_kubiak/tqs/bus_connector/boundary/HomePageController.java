@@ -22,18 +22,14 @@ import java.util.Optional;
 
 @Controller
 public class HomePageController {
-
     private final ManagerServiceImpl tripService;
-
     private final ExchangeRateService rateService;
-
-    private String originParam = "originStr";
-    private String destParam = "destinationStr";
-    private String dateParam = "dateStr";
-    private String dateIsoParam = "dateISO";
-
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
-    private SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private final String originParam = "originStr";
+    private final String destParam = "destinationStr";
+    private final String dateParam = "dateStr";
+    private final String dateIsoParam = "dateISO";
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
+    private final SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public HomePageController(ExchangeRateService rateService, ManagerServiceImpl tripService) {
         this.rateService = rateService;

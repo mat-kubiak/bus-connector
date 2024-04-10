@@ -29,10 +29,6 @@ public class City {
         this.name = name;
     }
 
-    public void setCityId(Long id) {
-        this.cityId = id;
-    }
-
     public Long getCityId() {
         return cityId;
     }

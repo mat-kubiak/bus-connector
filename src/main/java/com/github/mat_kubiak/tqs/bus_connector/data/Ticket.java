@@ -50,10 +50,6 @@ public class Ticket {
         this.lastName = lastName;
     }
 
-    public void setTicketId(Long ticketId) {
-        this.ticketId = ticketId;
-    }
-
     public Long getTicketId() {
         return ticketId;
     }

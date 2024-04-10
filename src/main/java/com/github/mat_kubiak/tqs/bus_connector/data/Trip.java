@@ -68,10 +68,6 @@ public class Trip {
         this.seatsTotal = seatsTotal;
     }
 
-    public void setTripId(Long tripId) {
-        this.tripId = tripId;
-    }
-
     public Long getTripId() {
         return tripId;
     }
