@@ -24,12 +24,12 @@ import java.util.Optional;
 public class HomePageController {
     private final ManagerServiceImpl tripService;
     private final ExchangeRateService rateService;
-    private final String originParam = "originStr";
-    private final String destParam = "destinationStr";
-    private final String dateParam = "dateStr";
-    private final String dateIsoParam = "dateISO";
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
-    private final SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
+    public final static String originParam = "originStr";
+    public final static String destParam = "destinationStr";
+    public final static String dateParam = "dateStr";
+    public final static String dateIsoParam = "dateISO";
+    public final static SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
+    public final static SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public HomePageController(ExchangeRateService rateService, ManagerServiceImpl tripService) {
         this.rateService = rateService;
@@ -51,7 +51,7 @@ public class HomePageController {
         Optional<City> fromCity = tripService.getCity(from);
         Optional<City> toCity = tripService.getCity(to);
         if (fromCity.isEmpty() || toCity.isEmpty()) {
-            return "index";
+            return index(model);
         }
 
         model.addAttribute(originParam, fromCity.get().getName());
@@ -63,7 +63,10 @@ public class HomePageController {
         model.addAttribute(dateParam, dateFormat.format(date));
         model.addAttribute(dateIsoParam, isoFormat.format(date));
 
-        model.addAttribute("isInPast", ManagerService.isDateInPast(date));
+        if (ManagerService.isDateInPast(date)) {
+            return index(model);
+        }
+
         return "search";
     }
 

@@ -3,6 +3,7 @@ package com.github.mat_kubiak.tqs.bus_connector.IT;
 import com.github.mat_kubiak.tqs.bus_connector.BusConnectorApplication;
 import com.github.mat_kubiak.tqs.bus_connector.TestUtil;
 import com.github.mat_kubiak.tqs.bus_connector.data.*;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -16,25 +17,18 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasSize;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * Run as a SpringBoot test. The parameters to SpringBootTest could be omitted, but, in this case,
- * we are trying to limit the web context to a simplified web framework, and load the designated application
- */
-//@SpringBootTest
-
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK, classes = BusConnectorApplication.class)
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
-// adapt AutoConfigureTestDatabase with TestPropertySource to use a real database
-// @TestPropertySource(locations = "application-integrationtest.properties")
 class RestController_IT {
 
     @Autowired
@@ -48,19 +42,9 @@ class RestController_IT {
 
     @AfterEach
     public void resetDb() {
-        cityRepository.deleteAll();
         tripRepository.deleteAll();
+        cityRepository.deleteAll();
     }
-
-//    @Test
-//    void whenValidInput_thenCreateCity() throws IOException, Exception {
-//        City tokyo = new City("Tokyo");
-//
-//        mvc.perform(get("/api/cities").contentType(MediaType.APPLICATION_JSON).content(toJson(tokyo)));
-//
-//        List<City> found = cityRepository.findAll();
-//        assertThat(found).extracting(City::getName).containsOnly("Tokyo");
-//    }
 
     @Test
     void givenCities_whenGetCities_thenStatus200() throws Exception {
@@ -77,29 +61,34 @@ class RestController_IT {
     }
 
     @Test
-    @Disabled
     void givenTrips_whenGetTrips_thenStatus200() throws Exception {
         Date date = TestUtil.getDate(TestUtil.getCurrentYear() + 1, 5, 5);
-        createTestTrip("Tokyo", "Moscow", Weekday.fromDate(date), Time.valueOf("08:00:00"), Time.valueOf("10:00:00"), 10, 10);
 
-        mvc.perform(get("/api/trips").contentType(MediaType.APPLICATION_JSON))
+        City tokyo = createTestCity("Tokyo");
+        City moscow = createTestCity("Moscow");
+        createTestTrip(tokyo, moscow, Weekday.fromDate(date), Time.valueOf("08:00:00"), Time.valueOf("10:00:00"), 10, 10);
+
+        String url = String.format("/api/trips?from=%d&to=%d&date=%tF", tokyo.getCityId(), moscow.getCityId(), date);
+        mvc.perform(get(url).contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$", hasSize(equalTo(1))))
+                .andExpect(jsonPath("$.sourceCity.name", is("Tokyo")))
+                .andExpect(jsonPath("$.destinationCity.name", is("Moscow")))
+                .andExpect(jsonPath("$.priceEuro", is(10)))
+                .andExpect(jsonPath("$.seatsTotal", is(10)));
     }
 
-    private void createTestCity(String name) {
+    private City createTestCity(String name) {
         City city = new City(name);
         cityRepository.saveAndFlush(city);
+        return city;
     }
 
-    private void createTestTrip(String originName, String destinationName, Weekday day, Time departure, Time arrival, int price, int maxSeats) {
-        City origin = new City(originName);
-        City dest = new City(destinationName);
-        cityRepository.saveAndFlush(origin);
-        cityRepository.saveAndFlush(dest);
-        Trip trip = new Trip(origin, dest, day,departure, arrival,  price, maxSeats);
+    private void createTestTrip(City origin, City destination, Weekday day, Time departure, Time arrival, int price, int maxSeats) {
+        Trip trip = new Trip(origin, destination, day,departure, arrival,  price, maxSeats);
         tripRepository.saveAndFlush(trip);
     }
 
 }
-
