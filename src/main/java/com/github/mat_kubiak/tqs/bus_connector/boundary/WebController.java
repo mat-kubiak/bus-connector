@@ -22,12 +22,12 @@ import java.util.Optional;
 public class WebController {
     private final BusServiceImpl tripService;
     private final ExchangeRateService rateService;
-    public final static String originParam = "originStr";
-    public final static String destParam = "destinationStr";
-    public final static String dateParam = "dateStr";
-    public final static String dateIsoParam = "dateISO";
-    public final static SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
-    public final static SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
+    public static final String ORIGIN_PARAM = "originStr";
+    public static final String DEST_PARAM = "destinationStr";
+    public static final String DATE_PARAM = "dateStr";
+    public static final String DATE_ISO_PARAM = "dateISO";
+    public final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEEE, dd MMMM yyyy");
+    public final SimpleDateFormat ISO_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public WebController(ExchangeRateService rateService, BusServiceImpl tripService) {
         this.rateService = rateService;
@@ -41,9 +41,9 @@ public class WebController {
     }
 
     @GetMapping("/search")
-    public String searchTrips(@RequestParam(required = true) Long from,
-                              @RequestParam(required = true) Long to,
-                              @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date,
+    public String searchTrips(@RequestParam Long from,
+                              @RequestParam Long to,
+                              @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date,
                               Model model) {
 
         Optional<City> fromCity = tripService.getCity(from);
@@ -52,14 +52,14 @@ public class WebController {
             return index(model);
         }
 
-        model.addAttribute(originParam, fromCity.get().getName());
-        model.addAttribute(destParam, toCity.get().getName());
+        model.addAttribute(ORIGIN_PARAM, fromCity.get().getName());
+        model.addAttribute(DEST_PARAM, toCity.get().getName());
 
         List<Trip> trips = tripService.getTrips(fromCity.get(), toCity.get(), date);
         model.addAttribute("trips", trips);
 
-        model.addAttribute(dateParam, dateFormat.format(date));
-        model.addAttribute(dateIsoParam, isoFormat.format(date));
+        model.addAttribute(DATE_PARAM, DATE_FORMAT.format(date));
+        model.addAttribute(DATE_ISO_PARAM, ISO_FORMAT.format(date));
 
         if (IBusService.isDateInPast(date)) {
             return index(model);
@@ -69,8 +69,8 @@ public class WebController {
     }
 
     @GetMapping("/book")
-    public String bookTicket(@RequestParam(required = true) Long tripId,
-                             @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date,
+    public String bookTicket(@RequestParam Long tripId,
+                             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date,
                              Model model) {
         Optional<Trip> tripOpt = tripService.getTrip(tripId);
         if (tripOpt.isEmpty() || IBusService.isDateInPast(date)) {
@@ -81,11 +81,11 @@ public class WebController {
         trip.setSeatsAvailable(tripService.calculateAvailableSeats(trip, date));
         model.addAttribute("trip", trip);
 
-        model.addAttribute(originParam, trip.getSourceCity().getName());
-        model.addAttribute(originParam, trip.getDestinationCity().getName());
+        model.addAttribute(ORIGIN_PARAM, trip.getSourceCity().getName());
+        model.addAttribute(ORIGIN_PARAM, trip.getDestinationCity().getName());
 
-        model.addAttribute(dateParam, dateFormat.format(date));
-        model.addAttribute(dateIsoParam, isoFormat.format(date));
+        model.addAttribute(DATE_PARAM, DATE_FORMAT.format(date));
+        model.addAttribute(DATE_ISO_PARAM, ISO_FORMAT.format(date));
 
         ExchangeRateResponse rateResponse = rateService.getExchangeRates();
         model.addAttribute("rates", rateResponse.getRates());
@@ -94,7 +94,7 @@ public class WebController {
     }
 
     @GetMapping("/confirm")
-    public String confirmBooking(@RequestParam(required = true) Long ticketId,
+    public String confirmBooking(@RequestParam Long ticketId,
                                  Model model) {
         Optional<Ticket> ticketOpt = tripService.getTicket(ticketId);
         if (ticketOpt.isEmpty()) {
@@ -105,12 +105,12 @@ public class WebController {
         model.addAttribute("ticket", ticket);
 
         Trip trip = ticket.getTrip();
-        model.addAttribute(originParam, trip.getSourceCity().getName());
-        model.addAttribute(destParam, trip.getDestinationCity().getName());
+        model.addAttribute(ORIGIN_PARAM, trip.getSourceCity().getName());
+        model.addAttribute(DEST_PARAM, trip.getDestinationCity().getName());
 
         Date date = ticket.getDate();
-        model.addAttribute("dateStr", dateFormat.format(date));
-        model.addAttribute("dateISO", isoFormat.format(date));
+        model.addAttribute(DATE_PARAM, DATE_FORMAT.format(date));
+        model.addAttribute(DATE_ISO_PARAM, ISO_FORMAT.format(date));
 
         return "confirm";
     }

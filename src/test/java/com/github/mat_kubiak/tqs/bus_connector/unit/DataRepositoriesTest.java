@@ -14,7 +14,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class DataRepositoriesUT {
+class DataRepositoriesTest {
 
     @Autowired
     private TestEntityManager entityManager;

@@ -19,19 +19,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
-class BusServiceUT {
+class BusServiceTest {
 
     private Date today, tomorrow;
     private City tokyo, lodz, moscow;
     private Trip tripToday, tripTomorrow;
 
-    @Mock
+    @Mock(lenient = true)
     private CityRepository cityRepository;
 
-    @Mock
+    @Mock(lenient = true)
     private TripRepository tripRepository;
 
-    @Mock
+    @Mock(lenient = true)
     private TicketRepository ticketRepository;
 
     @InjectMocks

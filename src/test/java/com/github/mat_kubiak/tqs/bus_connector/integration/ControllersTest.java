@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK, classes = BusConnectorApplication.class)
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
-class ControllersIT {
+class ControllersTest {
 
     @Autowired
     private MockMvc mvc;
@@ -97,10 +97,10 @@ class ControllersIT {
         mvc.perform(get(url))
                 .andExpect(status().isOk())
                 .andExpect(view().name("search"))
-                .andExpect(model().attributeExists(WebController.originParam))
-                .andExpect(model().attributeExists(WebController.destParam))
-                .andExpect(model().attributeExists(WebController.dateParam))
-                .andExpect(model().attributeExists(WebController.dateIsoParam))
+                .andExpect(model().attributeExists(WebController.ORIGIN_PARAM))
+                .andExpect(model().attributeExists(WebController.DEST_PARAM))
+                .andExpect(model().attributeExists(WebController.DATE_PARAM))
+                .andExpect(model().attributeExists(WebController.DATE_ISO_PARAM))
                 .andExpect(model().attributeExists("trips"));
     }
 

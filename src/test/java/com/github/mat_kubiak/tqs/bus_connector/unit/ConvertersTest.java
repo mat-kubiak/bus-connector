@@ -11,7 +11,7 @@ import static com.github.mat_kubiak.tqs.bus_connector.TestUtils.shiftByDays;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-class ConvertersUT {
+class ConvertersTest {
 
     @Test
     void testDateBefore() {
