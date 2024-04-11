@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ManagerServiceImpl {
+public class BusServiceImpl {
 
     final CityRepository cityRepository;
     final TripRepository tripRepository;
     final TicketRepository ticketRepository;
 
     @Autowired
-    public ManagerServiceImpl(CityRepository cityRepository, TripRepository tripRepository, TicketRepository ticketRepository) {
+    public BusServiceImpl(CityRepository cityRepository, TripRepository tripRepository, TicketRepository ticketRepository) {
         this.cityRepository = cityRepository;
         this.tripRepository = tripRepository;
         this.ticketRepository = ticketRepository;
@@ -61,7 +61,7 @@ public class ManagerServiceImpl {
             return Optional.empty();
         }
 
-        if (calculateAvailableSeats(trip, date) == 0 || ManagerService.isDateInPast(date)) {
+        if (calculateAvailableSeats(trip, date) == 0 || IBusService.isDateInPast(date)) {
             return Optional.empty();
         }
 

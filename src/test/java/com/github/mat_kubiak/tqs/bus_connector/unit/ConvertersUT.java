@@ -1,27 +1,27 @@
-package com.github.mat_kubiak.tqs.bus_connector;
+package com.github.mat_kubiak.tqs.bus_connector.unit;
 
 import com.github.mat_kubiak.tqs.bus_connector.data.Weekday;
-import com.github.mat_kubiak.tqs.bus_connector.service.ManagerService;
+import com.github.mat_kubiak.tqs.bus_connector.service.IBusService;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
 
-import static com.github.mat_kubiak.tqs.bus_connector.TestUtil.getDate;
-import static com.github.mat_kubiak.tqs.bus_connector.TestUtil.shiftDays;
+import static com.github.mat_kubiak.tqs.bus_connector.TestUtils.getDate;
+import static com.github.mat_kubiak.tqs.bus_connector.TestUtils.shiftByDays;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-class UnitTests {
+class ConvertersUT {
 
     @Test
     void testDateBefore() {
         Date now = new Date(System.currentTimeMillis());
-        Date yesterday = shiftDays(now, -1);
-        Date tomorrow = shiftDays(now, 1);
+        Date yesterday = shiftByDays(now, -1);
+        Date tomorrow = shiftByDays(now, 1);
 
-        assertThat(ManagerService.isDateInPast(now), equalTo(false));
-        assertThat(ManagerService.isDateInPast(yesterday), equalTo(true));
-        assertThat(ManagerService.isDateInPast(tomorrow), equalTo(false));
+        assertThat(IBusService.isDateInPast(now), equalTo(false));
+        assertThat(IBusService.isDateInPast(yesterday), equalTo(true));
+        assertThat(IBusService.isDateInPast(tomorrow), equalTo(false));
     }
 
     @Test

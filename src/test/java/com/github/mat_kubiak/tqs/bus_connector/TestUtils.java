@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.util.Calendar;
 
-public class TestUtil {
+public class TestUtils {
 
     public static byte[] toJson(Object object) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -23,7 +23,7 @@ public class TestUtil {
         return new java.sql.Date(calendar.getTimeInMillis());
     }
 
-    public static Date shiftDays(Date date, int shift) {
+    public static Date shiftByDays(Date date, int shift) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
 

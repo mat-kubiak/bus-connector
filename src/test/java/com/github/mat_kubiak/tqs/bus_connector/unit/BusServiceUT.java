@@ -1,7 +1,7 @@
-package com.github.mat_kubiak.tqs.bus_connector;
+package com.github.mat_kubiak.tqs.bus_connector.unit;
 
 import com.github.mat_kubiak.tqs.bus_connector.data.*;
-import com.github.mat_kubiak.tqs.bus_connector.service.ManagerServiceImpl;
+import com.github.mat_kubiak.tqs.bus_connector.service.BusServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,31 +13,29 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.Time;
 import java.util.*;
 
-import static com.github.mat_kubiak.tqs.bus_connector.TestUtil.getCurrentYear;
-import static com.github.mat_kubiak.tqs.bus_connector.TestUtil.getDate;
+import static com.github.mat_kubiak.tqs.bus_connector.TestUtils.getCurrentYear;
+import static com.github.mat_kubiak.tqs.bus_connector.TestUtils.getDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
-class TestManagerServiceImpl {
+class BusServiceUT {
 
     private Date today, tomorrow;
-    private Weekday todayWeekday, tomorrowWeekday;
     private City tokyo, lodz, moscow;
     private Trip tripToday, tripTomorrow;
 
-    @Mock( lenient = true)
+    @Mock
     private CityRepository cityRepository;
 
-
-    @Mock( lenient = true)
+    @Mock
     private TripRepository tripRepository;
 
-    @Mock( lenient = true)
+    @Mock
     private TicketRepository ticketRepository;
 
     @InjectMocks
-    private ManagerServiceImpl managerService;
+    private BusServiceImpl busService;
 
     @BeforeEach
     void setUp() {
@@ -57,8 +55,8 @@ class TestManagerServiceImpl {
         int nextYear = getCurrentYear() + 1; // required to keep the date in the future
         today = getDate(nextYear, 7, 8);
         tomorrow = getDate(nextYear, 7, 9);
-        todayWeekday = Weekday.fromDate(today);
-        tomorrowWeekday = Weekday.fromDate(tomorrow);
+        Weekday todayWeekday = Weekday.fromDate(today);
+        Weekday tomorrowWeekday = Weekday.fromDate(tomorrow);
 
         long epoch = Calendar.getInstance().getTimeInMillis();
         tripToday = new Trip(1L, tokyo, lodz, todayWeekday, new Time(epoch), new Time(epoch), 20, 2);
@@ -74,7 +72,7 @@ class TestManagerServiceImpl {
         Ticket ticket2 = new Ticket(2L, tripToday, today, "Joao", "Pereira");
         Ticket ticket3 = new Ticket(3L, tripTomorrow, today, "Joao", "Cadeira");
         List<Ticket> ticketsToday = Arrays.asList(ticket1, ticket2);
-        List<Ticket> ticketsTomorrow = Arrays.asList(ticket3);
+        List<Ticket> ticketsTomorrow = List.of(ticket3);
 
         Mockito.when(ticketRepository.findAllByTripAndDate(tripToday, today)).thenReturn(ticketsToday);
         Mockito.when(ticketRepository.findAllByTripAndDate(tripToday, tomorrow)).thenReturn(ticketsTomorrow);
@@ -85,30 +83,31 @@ class TestManagerServiceImpl {
 
     @Test
     void getAllCitiesTest() {
-        List<City> cities = managerService.getAllCities();
+        List<City> cities = busService.getAllCities();
         assertThat(cities).extracting(City::getName).containsExactly("Tokyo", "Lodz", "Moscow");
     }
 
     @Test
     void getTripsGivenDateTest() {
-        assertThat(managerService.getTrips(tokyo, lodz, today)).containsExactly(tripToday);
-        assertThat(managerService.getTrips(lodz, moscow, tomorrow)).containsExactly(tripTomorrow);
+        assertThat(busService.getTrips(tokyo, lodz, today)).containsExactly(tripToday);
+        assertThat(busService.getTrips(lodz, moscow, tomorrow)).containsExactly(tripTomorrow);
     }
 
     @Test
     void calculateAvailableSeatsTest() {
-        Trip trip = managerService.getTrip(1L).get();
-        assertThat(managerService.calculateAvailableSeats(trip, today)).isEqualTo(0);
+        Optional<Trip> tripOpt = busService.getTrip(1L);
+        assertThat(tripOpt).isNotEmpty();
+        assertThat(busService.calculateAvailableSeats(tripOpt.get(), today)).isEqualTo(0);
     }
 
     @Test
     void bookTicketTest() {
-        assertThat(managerService.bookTicket(tripTomorrow, tomorrow, "Ana", "Fereira").isEmpty()).isEqualTo(false);
+        assertThat(busService.bookTicket(tripTomorrow, tomorrow, "Ana", "Fereira").isEmpty()).isEqualTo(false);
 
         // incompatible weekday
-        assertThat(managerService.bookTicket(tripToday, today, "Ana", "Pereira").isEmpty()).isEqualTo(true);
+        assertThat(busService.bookTicket(tripToday, today, "Ana", "Pereira").isEmpty()).isEqualTo(true);
 
         // not enough space
-        assertThat(managerService.bookTicket(tripToday, today, "Ana", "Cadeira").isEmpty()).isEqualTo(true);
+        assertThat(busService.bookTicket(tripToday, today, "Ana", "Cadeira").isEmpty()).isEqualTo(true);
     }
 }

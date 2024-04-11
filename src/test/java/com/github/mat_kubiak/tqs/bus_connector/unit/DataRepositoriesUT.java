@@ -1,5 +1,6 @@
-package com.github.mat_kubiak.tqs.bus_connector;
+package com.github.mat_kubiak.tqs.bus_connector.unit;
 
+import com.github.mat_kubiak.tqs.bus_connector.TestUtils;
 import com.github.mat_kubiak.tqs.bus_connector.data.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class DataRepositoryTest {
+class DataRepositoriesUT {
 
     @Autowired
     private TestEntityManager entityManager;
@@ -75,7 +76,7 @@ class DataRepositoryTest {
         entityManager.persist(destination);
         entityManager.flush();
 
-        Date date = TestUtil.getDate(TestUtil.getCurrentYear() + 1, 5, 20);
+        Date date = TestUtils.getDate(TestUtils.getCurrentYear() + 1, 5, 20);
 
         Trip trip = new Trip(source, destination, Weekday.fromDate(date), java.sql.Time.valueOf("08:00:00"), java.sql.Time.valueOf("12:00:00"), 10, 50);
         entityManager.persist(trip);

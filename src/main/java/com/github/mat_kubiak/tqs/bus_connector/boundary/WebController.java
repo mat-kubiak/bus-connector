@@ -5,11 +5,9 @@ import com.github.mat_kubiak.tqs.bus_connector.data.ExchangeRateResponse;
 import com.github.mat_kubiak.tqs.bus_connector.data.Ticket;
 import com.github.mat_kubiak.tqs.bus_connector.data.Trip;
 import com.github.mat_kubiak.tqs.bus_connector.service.ExchangeRateService;
-import com.github.mat_kubiak.tqs.bus_connector.service.ManagerService;
-import com.github.mat_kubiak.tqs.bus_connector.service.ManagerServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.github.mat_kubiak.tqs.bus_connector.service.IBusService;
+import com.github.mat_kubiak.tqs.bus_connector.service.BusServiceImpl;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +19,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-public class HomePageController {
-    private final ManagerServiceImpl tripService;
+public class WebController {
+    private final BusServiceImpl tripService;
     private final ExchangeRateService rateService;
     public final static String originParam = "originStr";
     public final static String destParam = "destinationStr";
@@ -31,7 +29,7 @@ public class HomePageController {
     public final static SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd MMMM yyyy");
     public final static SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    public HomePageController(ExchangeRateService rateService, ManagerServiceImpl tripService) {
+    public WebController(ExchangeRateService rateService, BusServiceImpl tripService) {
         this.rateService = rateService;
         this.tripService = tripService;
     }
@@ -63,7 +61,7 @@ public class HomePageController {
         model.addAttribute(dateParam, dateFormat.format(date));
         model.addAttribute(dateIsoParam, isoFormat.format(date));
 
-        if (ManagerService.isDateInPast(date)) {
+        if (IBusService.isDateInPast(date)) {
             return index(model);
         }
 
@@ -75,7 +73,7 @@ public class HomePageController {
                              @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date,
                              Model model) {
         Optional<Trip> tripOpt = tripService.getTrip(tripId);
-        if (tripOpt.isEmpty() || ManagerService.isDateInPast(date)) {
+        if (tripOpt.isEmpty() || IBusService.isDateInPast(date)) {
             return index(model);
         }
         Trip trip = tripOpt.get();
