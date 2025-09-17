@@ -34,3 +34,8 @@ build/
 
 ### LOGS ###
 bus_connector.log
+
+### SECRETS ###
+.env
+.env.local
+.env.*.local
