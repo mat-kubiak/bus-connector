@@ -1,10 +1,14 @@
-version: '3.8'
+name: bus-connector
 
 services:
-  mysql:
-    image: mysql:latest
-    ports:
-      - "3306:3306"
+  db:
+    image: mysql:9.4.0
+    container_name: bc-db
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_DATABASE: bus_connector
@@ -12,6 +16,22 @@ services:
       MYSQL_PASSWORD: admin
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - internal
+
+  app:
+    build: ./app
+    container_name: bc-app
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - internal
+    ports:
+      - "8080:8080"
 
 volumes:
   mysql_data:
+
+networks:
+  internal:
